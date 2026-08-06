@@ -40,8 +40,6 @@ exclude = ["tests*"]
 [tool.ruff]
 target-version = "py311"
 line-length = 88
-# The owner's untracked scratch files: not part of the maintained codebase.
-extend-exclude = ["tests/tests.py", "tests/testpypi.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "D"]
