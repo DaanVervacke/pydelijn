@@ -1,0 +1,13 @@
+{
+  "entiteitnummer": "2",
+  "lijnnummer": "335",
+  "lijnnummerPubliek": "35",
+  "omschrijving": "Gent - Wondelgem",
+  "vervoerRegioCode": "VR",
+  "publiek": true,
+  "vervoertype": "BUS",
+  "bedieningtype": "GEWOON",
+  "lijnGeldigVan": "2016-08-31",
+  "lijnGeldigTot": "2099-10-30",
+  "links": []
+}

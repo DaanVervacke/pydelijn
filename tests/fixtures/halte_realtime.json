@@ -1,0 +1,29 @@
+{
+  "ritNotas": [],
+  "doorkomstNotas": [],
+  "dienstregelingNotas": [],
+  "links": [],
+  "halteDoorkomsten": [
+    {
+      "haltenummer": "200552",
+      "doorkomsten": [
+        {
+          "doorkomstId": "2026-08-06_2127_14_1_201044",
+          "entiteitnummer": "2",
+          "lijnnummer": 335,
+          "richting": "HEEN",
+          "ritnummer": "44",
+          "bestemming": "GENT STATION",
+          "plaatsBestemming": "Gent Sint-Pieters",
+          "vias": ["VIA WONDELGEM"],
+          "haltenummer": "200552",
+          "dienstregelingTijdstip": "2026-08-06T14:05:00",
+          "doorkomstTijdstip": "2026-08-06T14:07:00",
+          "vrtnum": "521684",
+          "predictionStatussen": ["REALTIME"],
+          "links": []
+        }
+      ]
+    }
+  ]
+}

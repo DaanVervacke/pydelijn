@@ -1,13 +1,19 @@
 # pydelijn
 
-[![PyPI version](https://badge.fury.io/py/pydelijn.svg)](https://pypi.org/project/pydelijn)
-[![Build Status](https://github.com/emilv2/pydelijn/actions/workflows/ci.yml/badge.svg)](https://github.com/Emilv2/pydelijn/actions/workflows/ci.yml)
+[![Build Status](https://github.com/bollewolle/pydelijn/actions/workflows/ci.yml/badge.svg)](https://github.com/bollewolle/pydelijn/actions/workflows/ci.yml)
 
-A Python package to retrieve realtime data of passages at stops of De Lijn, the public transport company in Flanders (Belgium)
+An async, fully typed Python client for the De Lijn (Flemish public
+transport) open data API. It retrieves stops, lines, and realtime/scheduled
+passages.
 
-Main purpose at the moment is to feed a sensor in Home-Assistant
+Its primary purpose is to feed the De Lijn integration in Home Assistant.
 
-**Important note**: a developer account needs to be created at https://data.delijn.be to generate a subscription key for the api's.
+**Important**: a developer account at https://data.delijn.be is required to
+generate a subscription key for the Core and Search open data APIs.
+
+> **v2 is a breaking rewrite.** The old dict-based `pydelijn.api.Passages`
+> API is gone, replaced by `DeLijnClient` with typed models and exceptions.
+> Docs for v1 are available in the git history.
 
 ## Install
 
@@ -15,63 +21,37 @@ Main purpose at the moment is to feed a sensor in Home-Assistant
 pip install pydelijn
 ```
 
-### Example usage
+## Usage
 
 ```python
-"""Example usage of pydelijn."""
 import asyncio
-import aiohttp
-from pydelijn.api import Passages
+
+from pydelijn import DeLijnClient
+from pydelijn.exceptions import DeLijnError
 
 
-async def test_pydelijn():
-    """Example usage of pydelijn."""
-    subscriptionkey = '<put your data.delijn.be subscriptionkey here>'
-    stopid = 200551
-    maxpassages = 10
-    custom_session = aiohttp.ClientSession()
-    delijndata = Passages(LOOP,
-                          stopid,
-                          maxpassages,
-                          subscriptionkey,
-                          custom_session,
-                          True)
-    await delijndata.get_passages()
-    await custom_session.close()
+async def main() -> None:
+    api_key = "<your data.delijn.be subscription key>"
 
-    print_data(delijndata)
+    async with DeLijnClient(api_key) as client:
+        stops = await client.search_stops("Antwerpen Rooseveltplaats")
+        stop = stops[0]
+
+        passages = await client.get_passages(stop.number, max_passages=5)
+        for passage in passages:
+            print(
+                f"Line {passage.line.public_number} to {passage.destination}: "
+                f"due at {passage.due_at} (realtime={passage.is_realtime})"
+            )
 
 
-def print_data(delijndata):
-    """Pretty Print the data."""
-    for line in delijndata.passages:
-        print("----------------------------------------")
-        print("Passage #: %s" % (line['passage']))
-        print("Stop Name: %s" % (line['stopname']))
-        print("Line Number (technical): %s" % (line['line_number']))
-        print("Line Number (public): %s" % (line['line_number_public']))
-        print("Line Description: %s" % (line['line_desc']))
-        print("Line Transport Type: %s" % (line['line_transport_type']))
-        print("Direction: %s" % (line['direction']))
-        print("Final Destination: %s" % (line['final_destination']))
-        print("Due At (schedule): %s" % (line['due_at_schedule']))
-        print("Due At (real-time): %s" % (line['due_at_realtime']))
-        print("Due In (min): %s" % (line['due_in_min']))
-        print("Line Colour - Front: %s - Hex: %s" % (
-            line['line_number_colourFront'],
-            line['line_number_colourFrontHex']))
-        print("Line Colour - Back: %s - Hex: %s" % (
-            line['line_number_colourBack'],
-            line['line_number_colourBackHex']))
-        print("Line Colour - Front Border: %s - Hex: %s" % (
-            line['line_number_colourFrontBorder'],
-            line['line_number_colourFrontBorderHex']))
-        print("Line Colour - Back Border: %s - Hex: %s" % (
-            line['line_number_colourBackBorder'],
-            line['line_number_colourBackBorderHex']))
+asyncio.run(main())
+```
 
+Errors are raised as typed exceptions (`DeLijnConnectionError`,
+`DeLijnAuthError`, `DeLijnNotFoundError`, `DeLijnResponseError`, all
+subclasses of `DeLijnError`) rather than logged and swallowed, so callers
+(e.g. a Home Assistant `DataUpdateCoordinator`) can react to failures.
 
-LOOP = asyncio.get_event_loop()
-LOOP.run_until_complete(test_pydelijn())
-LOOP.close()
-
+You may pass in your own `aiohttp.ClientSession`; if you don't, one is
+created lazily and closed by `client.close()` (or on exiting `async with`).

@@ -1,0 +1,18 @@
+{
+  "entiteitnummer": "2",
+  "haltenummer": "200552",
+  "omschrijving": "Heizijde",
+  "omschrijvingLang": "Gent Heizijde",
+  "gemeentenummer": 44,
+  "omschrijvingGemeente": "Gent",
+  "districtCode": "GNT",
+  "geoCoordinaat": {
+    "latitude": 51.054302,
+    "longitude": 3.717425
+  },
+  "hoofdHalte": true,
+  "taal": "NEDERLANDS",
+  "classificatie": "REGULIER",
+  "bedieningsTypes": ["BUS"],
+  "links": []
+}

@@ -1,0 +1,8 @@
+{
+  "links": [],
+  "lijnkleuren": [
+    { "code": "ZW", "omschrijving": "Zwart", "rgb": { "rood": 0, "groen": 0, "blauw": 0 }, "hex": "000000", "links": [] },
+    { "code": "WI", "omschrijving": "Wit", "rgb": { "rood": 255, "groen": 255, "blauw": 255 }, "hex": "FFFFFF", "links": [] },
+    { "code": "BLGR", "omschrijving": "Blauw-Groen", "rgb": { "rood": 0, "groen": 100, "blauw": 100 }, "hex": "006464", "links": [] }
+  ]
+}

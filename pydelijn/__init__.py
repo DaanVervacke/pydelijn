@@ -1,4 +1,26 @@
-"""Initialize the package."""
-NAME = "pydelijn"
+"""Async client library for the De Lijn (Flemish public transport) open data API."""
 
-__version__ = "1.1.0"
+from .client import DeLijnClient
+from .exceptions import (
+    DeLijnAuthError,
+    DeLijnConnectionError,
+    DeLijnError,
+    DeLijnNotFoundError,
+    DeLijnResponseError,
+)
+from .models import Line, Passage, Stop
+
+__version__ = "2.0.0b0"
+
+__all__ = [
+    "DeLijnAuthError",
+    "DeLijnClient",
+    "DeLijnConnectionError",
+    "DeLijnError",
+    "DeLijnNotFoundError",
+    "DeLijnResponseError",
+    "Line",
+    "Passage",
+    "Stop",
+    "__version__",
+]
