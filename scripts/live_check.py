@@ -50,6 +50,8 @@ async def main() -> int:
                 print(f"  {candidate}: {'PRESENT' if candidate in keys else 'absent'}")
         else:
             print("no doorkomsten right now (quiet stop or late hour)")
+            print(f"  raw response keys: {sorted(raw)}")
+            print(f"  raw response head: {str(raw)[:400]}")
 
         async with session.get(
             "https://api.delijn.be/DLKernOpenData/api/v1/kleuren",
@@ -72,7 +74,8 @@ async def main() -> int:
             )
 
         results = await client.search_stops("Gent Sint-Pieters", max_results=3)
-        print(f"search 'Gent Sint-Pieters': {[s.name for s in results]}")
+        found = [f"{s.name} ({s.number})" for s in results]
+        print(f"search 'Gent Sint-Pieters': {found}")
 
     print("live check OK")
     return 0
