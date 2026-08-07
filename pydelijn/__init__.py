@@ -10,7 +10,7 @@ from .exceptions import (
 )
 from .models import Line, Passage, Stop
 
-__version__ = "2.0.0b0"
+__version__ = "2.0.0"
 
 __all__ = [
     "DeLijnAuthError",

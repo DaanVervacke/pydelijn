@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pydelijn"
-version = "2.0.0b0"
+version = "2.0.0"
 description = "Async client for De Lijn (Flemish public transport) open data API"
 readme = "README.md"
 license = { text = "MIT" }
