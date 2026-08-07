@@ -94,10 +94,16 @@ def _parse_stop(data: dict[str, Any]) -> Stop:
     )
 
 
-def _parse_punt(data: dict[str, Any]) -> Stop:
-    """Parse a Core API ``Punt`` object (from haltes/indebuurt) into a Stop."""
+def _parse_nearby_stop(data: dict[str, Any]) -> Stop:
+    """Parse a nearby-stop object (from haltes/indebuurt) into a Stop.
+
+    The OpenAPI spec models these as ``Punt`` objects, but the live API
+    (verified 2026-08) returns ``Halte``-like objects with ``id``, ``naam``
+    and ``afstand`` (distance in meters).
+    """
     stop_number = str(data.get("id") or "")
     latitude, longitude = _parse_geo_coordinate(data.get("geoCoordinaat"))
+    distance = data.get("afstand")
     return Stop(
         entity_number=_entity_number(stop_number) if stop_number else "",
         number=stop_number,
@@ -105,6 +111,7 @@ def _parse_punt(data: dict[str, Any]) -> Stop:
         municipality=None,
         latitude=latitude,
         longitude=longitude,
+        distance=int(distance) if distance is not None else None,
     )
 
 
@@ -233,7 +240,9 @@ class DeLijnClient:
         """Get stops near a given coordinate, ordered by distance."""
         url = f"{_KERN_BASE_URL}/haltes/indebuurt/{latitude},{longitude}"
         data = await self._request(url, params={"maxAantalHaltes": max_results})
-        return [_parse_punt(item) for item in data.get("punten") or []]
+        # The spec names the array "punten"; the live API sends "haltes".
+        items = data.get("haltes") or data.get("punten") or []
+        return [_parse_nearby_stop(item) for item in items]
 
     async def get_passages(
         self, stop_number: str, max_passages: int = 10

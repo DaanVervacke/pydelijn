@@ -113,7 +113,7 @@ async def test_search_stops(zoek_haltes):
 
 
 async def test_get_stops_near(haltes_indebuurt):
-    """get_stops_near parses a Punten payload into a list of Stops."""
+    """get_stops_near parses a live-style haltes payload into Stops."""
     with aioresponses() as mocked:
         mocked.get(INDEBUURT_URL, payload=haltes_indebuurt)
         async with DeLijnClient("fake-key") as client:
@@ -126,6 +126,7 @@ async def test_get_stops_near(haltes_indebuurt):
     assert stop.name == "Gent Heizijde"
     assert stop.latitude == 51.054302
     assert stop.longitude == 3.717425
+    assert stop.distance == 42
 
 
 async def test_injected_session_is_not_closed(halte):

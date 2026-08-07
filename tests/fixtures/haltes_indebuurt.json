@@ -1,12 +1,12 @@
 {
-  "links": [],
-  "punten": [
+  "haltes": [
     {
-      "links": [],
+      "type": "DELIJN",
       "id": "200552",
       "naam": "Gent Heizijde",
       "afstand": 42,
-      "geoCoordinaat": "51.054302,3.717425"
+      "geoCoordinaat": { "latitude": 51.054302, "longitude": 3.717425 },
+      "links": []
     }
   ]
 }

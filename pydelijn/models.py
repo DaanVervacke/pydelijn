@@ -16,6 +16,8 @@ class Stop:
     municipality: str | None = None
     latitude: float | None = None
     longitude: float | None = None
+    distance: int | None = None
+    """Distance in meters from the search location, for nearby searches."""
 
 
 @dataclass(frozen=True, slots=True)
