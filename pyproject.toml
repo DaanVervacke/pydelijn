@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pydelijn"
-version = "2.0.0"
+version = "2.0.1"
 description = "Async client for De Lijn (Flemish public transport) open data API"
 readme = "README.md"
 license = { text = "MIT" }
@@ -32,6 +32,9 @@ test = ["pytest", "pytest-asyncio", "aioresponses", "ruff", "aiohttp<3.14"]
 [project.urls]
 Homepage = "https://github.com/bollewolle/pydelijn"
 Repository = "https://github.com/bollewolle/pydelijn"
+
+[tool.setuptools.package-data]
+pydelijn = ["py.typed"]
 
 [tool.setuptools.packages.find]
 include = ["pydelijn*"]
