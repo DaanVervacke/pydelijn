@@ -54,7 +54,9 @@ def _parse_timestamp(value: str | None) -> datetime | None:
     return parsed
 
 
-def _parse_geo_coordinate(value: Any) -> tuple[float | None, float | None]:
+def _parse_geo_coordinate(
+    value: dict[str, Any] | str | None,
+) -> tuple[float | None, float | None]:
     """Parse a geoCoordinaat value.
 
     The spec schema models it as ``{"latitude": ..., "longitude": ...}`` but
@@ -133,8 +135,8 @@ def _hex_for(
 class DeLijnClient:
     """Async client for the De Lijn open data APIs.
 
-    Raises typed exceptions from :mod:`pydelijn.exceptions` on failure;
-    it never logs-and-swallows an error.
+    Raises typed exceptions from :mod:`pydelijn.exceptions` on failure.
+    It never logs-and-swallows an error.
     """
 
     def __init__(
@@ -237,10 +239,13 @@ class DeLijnClient:
     async def get_stops_near(
         self, latitude: float, longitude: float, max_results: int = 10
     ) -> list[Stop]:
-        """Get stops near a given coordinate, ordered by distance."""
+        """Get stops near a given coordinate, ordered by distance.
+
+        The spec names the response array "punten". The live API sends
+        "haltes". Both keys are accepted.
+        """
         url = f"{_KERN_BASE_URL}/haltes/indebuurt/{latitude},{longitude}"
         data = await self._request(url, params={"maxAantalHaltes": max_results})
-        # The spec names the array "punten"; the live API sends "haltes".
         items = data.get("haltes") or data.get("punten") or []
         return [_parse_nearby_stop(item) for item in items]
 
@@ -258,14 +263,17 @@ class DeLijnClient:
         return passages
 
     async def _parse_doorkomst(self, doorkomst: dict[str, Any]) -> Passage:
-        """Parse a single ``Doorkomst`` object into a Passage."""
+        """Parse a single ``Doorkomst`` object into a Passage.
+
+        The OpenAPI spec documents "doorkomstTijdstip" for the realtime
+        timestamp, but the live API sends "real-timeTijdstip". Both keys
+        are accepted.
+        """
         entity = str(doorkomst.get("entiteitnummer") or "")
         line_number = str(doorkomst.get("lijnnummer") or "")
         line = await self._get_line(entity, line_number)
 
         due_at_schedule = _parse_timestamp(doorkomst.get("dienstregelingTijdstip"))
-        # The OpenAPI spec documents "doorkomstTijdstip", but the live API
-        # (verified 2026-08) sends "real-timeTijdstip". Accept both.
         realtime_value = doorkomst.get("doorkomstTijdstip") or doorkomst.get(
             "real-timeTijdstip"
         )
@@ -297,7 +305,9 @@ class DeLijnClient:
         )
 
     @staticmethod
-    def _parse_prediction_statuses(statuses: Any) -> tuple[bool, bool]:
+    def _parse_prediction_statuses(
+        statuses: list[str] | str | None,
+    ) -> tuple[bool, bool]:
         """Translate ``predictionStatussen`` into ``(is_realtime, cancelled)``."""
         if isinstance(statuses, str):
             statuses = [statuses]
@@ -366,12 +376,14 @@ class DeLijnClient:
         )
 
     async def _get_colour_map(self) -> dict[str, str]:
-        """Fetch and cache the colour code -> hex mapping (fetched once)."""
+        """Fetch and cache the colour code to hex mapping (fetched once).
+
+        The OpenAPI spec names the array "lijnkleuren", but the live API
+        sends "kleuren". Both keys are accepted.
+        """
         if self._colour_map is None:
             data = await self._request(f"{_KERN_BASE_URL}/kleuren")
             colour_map: dict[str, str] = {}
-            # The OpenAPI spec names the array "lijnkleuren", but the live API
-            # (verified 2026-08) sends "kleuren". Accept both.
             for entry in data.get("lijnkleuren") or data.get("kleuren") or []:
                 code = entry.get("code")
                 hex_value = entry.get("hex")
